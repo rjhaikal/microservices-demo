@@ -307,6 +307,7 @@ spec:
           averageUtilization: {{ .Values.frontend.hpa.targetCPUUtilizationPercentage }}
   behavior:
     scaleDown:
+      stabilizationWindowSeconds: 10
       policies:
         - type: Percent
           value: 100
