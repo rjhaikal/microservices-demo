@@ -283,6 +283,8 @@ spec:
           number: 80
 {{- end }}
 {{- end }}
+
+{{- if .Values.frontend.hpa.create }}
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -304,4 +306,4 @@ spec:
           type: Utilization
           averageUtilization: {{ .Values.frontend.hpa.targetCPUUtilizationPercentage }}
 {{- end }}
-{{- if .Values.frontend.hpa.apiVersion }}
+{{- end }}
