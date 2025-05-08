@@ -1,11 +1,11 @@
 name: Build & Push Image on Selected Service
-
 on:
   workflow_dispatch:
     inputs:
       service:
         description: 'Service name under src/ to build and push'
         required: true
+        default: 'frontend'
         type: choice
         options:
           - frontend
@@ -18,6 +18,8 @@ on:
           - checkoutservice
           - recommendationservice
           - adservice
+          - loadgenerator
+          - shoppingassistantservice
 
 jobs:
   build-and-push:
@@ -41,11 +43,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push ${{ github.event.inputs.service }}
+      - name: Build & push ${{ matrix.service }}
         uses: docker/build-push-action@v6
         with:
-          context: src/${{ github.event.inputs.service }}
-          file: src/${{ github.event.inputs.service }}/Dockerfile
+          context: src/${{ matrix.service }}
+          file: src/${{ matrix.service }}/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ github.event.inputs.service }}
