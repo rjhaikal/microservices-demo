@@ -139,6 +139,13 @@ frontend:
       cpu: 200m
       memory: 128Mi
 
+  hpa:
+    name: frontend-hpa
+    create: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 50
+
 loadGenerator:
   create: true
   name: loadgenerator
