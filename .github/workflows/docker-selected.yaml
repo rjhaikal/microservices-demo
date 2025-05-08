@@ -1,71 +1,26 @@
-# name: Build & Push Image on Selected Service
-# on:
-#   push:
-#     branches:
-#       - pipeline
-#     paths:
-#       - 'src/${{ github.event.inputs.service }}/**'
-#   workflow_dispatch:
-#     inputs:
-#       service:
-#         description: 'Service to Build and Push'
-#         required: true
-#         default: 'frontend'
-#         type: choice
-#         options:
-#           - frontend
-#           - cartservice
-#           - productcatalogservice
-#           - currencyservice
-#           - paymentservice
-#           - shippingservice
-#           - emailservice
-#           - checkoutservice
-#           - recommendationservice
-#           - adservice
-#           - loadgenerator
-#           - shoppingassistantservice
-
-# jobs:
-#   build-and-push:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-
-#       - name: Set up QEMU
-#         uses: docker/setup-qemu-action@v3
-
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v3
-
-#       - name: Log in to Docker Hub
-#         uses: docker/login-action@v3
-#         with:
-#           username: ${{ secrets.DOCKERHUB_USERNAME }}
-#           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-#       - name: Build & push ${{ github.event.inputs.service }}
-#         uses: docker/build-push-action@v6
-#         with:
-#           context: src/${{ github.event.inputs.service }}
-#           file: src/${{ github.event.inputs.service }}/Dockerfile
-#           push: true
-#           tags: |
-#             ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ github.event.inputs.service }}
-#             ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ github.event.inputs.service }}-${{ github.sha }}
-
-name: Test Workflow
+name: Mixed inputs
 
 on:
   workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Who to greet
+        options: 
+        - monalisa
+        - cschleiden
+      message:
+        required: true
+      use-emoji:
+        type: boolean
+        description: Include 🎉🤣 emojis
+      environment:
+        type: environment
 
 jobs:
-  test-job:
+  greet:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Print Message
-        run: echo "Workflow sederhana ini berfungsi!"
+    - name: Send greeting
+      run: echo "${{ github.event.inputs.message }} ${{ fromJSON('["", "🥳"]')[github.event.inputs.use-emoji == 'true'] }} ${{ github.event.inputs.name }}"
