@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       service:
-        description: 'Service name under src/ to build and push'
+        description: 'Service to Build and Push'
         required: true
         default: 'frontend'
         type: choice
@@ -43,11 +43,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push ${{ matrix.service }}
+      - name: Build & push ${{ github.event.inputs.service }}
         uses: docker/build-push-action@v6
         with:
-          context: src/${{ matrix.service }}
-          file: src/${{ matrix.service }}/Dockerfile
+          context: src/${{ github.event.inputs.service }}
+          file: src/${{ github.event.inputs.service }}/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ github.event.inputs.service }}
