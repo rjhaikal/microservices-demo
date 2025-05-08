@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - pipeline
+    paths:
+      - 'src/frontend/**'
   workflow_dispatch:
 
 jobs:
