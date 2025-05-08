@@ -79,7 +79,7 @@ cartService:
       memory: 64Mi
     limits:
       cpu: 300m
-      memory: 256Mi
+      memory: 128Mi
 
 checkoutService:
   create: true
