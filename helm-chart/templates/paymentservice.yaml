@@ -89,6 +89,16 @@ spec:
         - name: DISABLE_PROFILER
           value: "1"
         {{- end }}
+        - name: KLOIA_TEST_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.paymentService.secretName }}
+              key: {{ .Values.paymentService.env.KLOIA_TEST_USERNAME_KEY }}
+        - name: KLOIA_TEST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.paymentService.secretName }}
+              key: {{ .Values.paymentService.env.KLOIA_TEST_PASSWORD_KEY }}
         readinessProbe:
           grpc:
             port: 50051

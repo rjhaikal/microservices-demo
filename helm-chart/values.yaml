@@ -168,6 +168,10 @@ paymentService:
     limits:
       cpu: 200m
       memory: 128Mi
+  secretName: sock-shop-secretkv
+  env:
+    KLOIA_TEST_USERNAME_KEY: username
+    KLOIA_TEST_PASSWORD_KEY: password
 
 productCatalogService:
   create: true
