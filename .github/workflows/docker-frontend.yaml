@@ -1,29 +1,15 @@
-name: Build & Push All Services
+name: Build & Push Frontend Service
 on:
   push:
     branches:
       - pipeline
     paths:
-      - 'src/**'
+      - 'src/frontend/**'
 
 jobs:
-  build-and-push:
+  build-frontend:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service:
-          - adservice
-          - cartservice
-          - checkoutservice
-          - currencyservice
-          - emailservice
-          - frontend
-          - loadgenerator
-          - paymentservice
-          - productcatalogservice
-          - recommendationservice
-          - shippingservice
-          - redis
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,12 +28,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push ${{ matrix.service }} Image
+      - name: Build & Push Frontend Image
         uses: docker/build-push-action@v6
         with:
-          context: src/${{ matrix.service }}
-          file: src/${{ matrix.service }}/Dockerfile
+          context: src/frontend
+          file: src/frontend/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ matrix.service }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ matrix.service }}-${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:frontend
+            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:frontend-${{ github.sha }}
