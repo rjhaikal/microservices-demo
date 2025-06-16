@@ -63,7 +63,7 @@ jobs:
 
   ## Deploy Microservices
   deploy:
-    needs: build
+    needs: [changes, build]
     runs-on: ubuntu-latest
     if: ${{ needs.build.result == 'success' && needs.changes.outputs.packages != '[]' }}
     strategy:
