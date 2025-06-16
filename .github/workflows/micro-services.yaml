@@ -34,6 +34,7 @@ jobs:
   build:
     needs: changes
     runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.packages != '[]' }}
     strategy:
       fail-fast: false
       matrix:
@@ -64,6 +65,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    if: ${{ needs.build.result == 'success' && needs.changes.outputs.packages != '[]' }}
     strategy:
       fail-fast: false
       matrix:
