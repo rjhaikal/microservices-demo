@@ -1,8 +1,9 @@
-name: Build & Push Microservices
+name: Microservices Pipeline
 on:
   push:
     branches: [ main ]
 jobs:
+  ## Detect Changes in Microservices
   changes:
     runs-on: ubuntu-latest
     steps:
@@ -13,22 +14,31 @@ jobs:
       id: filter
       with:
         filters: |
-          frontend:
-            - 'src/frontend/**'
-          loadgenerator:
-            - 'src/loadgenerator/**'
-          paymentservice:
-            - 'src/paymentservice/**'
+          frontend: src/frontend/**
+          loadgenerator: src/loadgenerator/**
+          paymentservice: src/paymentservice/**
+          productcatalogservice: src/productcatalogservice/**
+          recommendationservice: src/recommendationservice/**
+          shippingservice: src/shippingservice/**
+          currencyservice: src/currencyservice/**
+          emailservice: src/emailservice/**
+          adservice: src/adservice/**
+          cartservice: src/cartservice/**
+          checkoutservice: src/checkoutservice/**
+          shoppingassistantservice: src/shoppingassistantservice/**
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      loadgenerator: ${{ steps.filter.outputs.loadgenerator }}
-      paymentservice: ${{ steps.filter.outputs.paymentservice }}
+      # Expose matched filters as job 'packages' output variable
+      packages: ${{ steps.filter.outputs.changes }}
 
-## Frontend
-  frontend:
+  ## Build & Push Microservices Images
+  build:
     needs: changes
-    if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Parse JSON array containing names of all filters matching any of changed files
+        service: ${{ fromJSON(needs.changes.outputs.packages) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,64 +50,29 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build & Push image
+      - name: Build & Push ${{ matrix.service }}
         uses: docker/build-push-action@v6
         with:
-          context: src/frontend
-          file: src/frontend/Dockerfile
+          context: src/${{ matrix.service }}
+          file: src/${{ matrix.service }}/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:frontend
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:frontend-${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ matrix.service }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:${{ matrix.service }}-${{ github.sha }}
 
-## Load Generator
-  loadgenerator:
-    needs: changes
-    if: ${{ needs.changes.outputs.loadgenerator == 'true' }}
+  ## Deploy Microservices
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Parse JSON array containing names of all filters matching any of changed files
+        service: ${{ fromJSON(needs.changes.outputs.packages) }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build & Push image
-        uses: docker/build-push-action@v6
-        with:
-          context: src/loadgenerator
-          file: src/loadgenerator/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:loadgenerator
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:loadgenerator-${{ github.sha }}
-
-## Payment Service
-  paymentservice:
-    needs: changes
-    if: ${{ needs.changes.outputs.paymentservice == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build & Push image
-        uses: docker/build-push-action@v6
-        with:
-          context: src/paymentservice
-          file: src/paymentservice/Dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:paymentservice
-            ${{ secrets.DOCKERHUB_USERNAME }}/microservices-demo:paymentservice-${{ github.sha }}
+      - name: Deploy ${{ matrix.service }}
+        run: |
+          echo "# Your deploy steps for ${{ matrix.service }}"
