@@ -13,19 +13,7 @@ jobs:
     - uses: dorny/paths-filter@v3
       id: filter
       with:
-        filters: |
-          frontend: src/frontend/**
-          loadgenerator: src/loadgenerator/**
-          paymentservice: src/paymentservice/**
-          productcatalogservice: src/productcatalogservice/**
-          recommendationservice: src/recommendationservice/**
-          shippingservice: src/shippingservice/**
-          currencyservice: src/currencyservice/**
-          emailservice: src/emailservice/**
-          adservice: src/adservice/**
-          cartservice: src/cartservice/**
-          checkoutservice: src/checkoutservice/**
-          shoppingassistantservice: src/shoppingassistantservice/**
+        filters: .github/filters.yaml
     outputs:
       # Expose matched filters as job 'packages' output variable
       packages: ${{ steps.filter.outputs.changes }}

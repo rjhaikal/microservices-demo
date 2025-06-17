@@ -1,0 +1,12 @@
+frontend: src/frontend/**
+loadgenerator: src/loadgenerator/**
+paymentservice: src/paymentservice/**
+productcatalogservice: src/productcatalogservice/**
+recommendationservice: src/recommendationservice/**
+shippingservice: src/shippingservice/**
+currencyservice: src/currencyservice/**
+emailservice: src/emailservice/**
+adservice: src/adservice/**
+cartservice: src/cartservice/**
+checkoutservice: src/checkoutservice/**
+shoppingassistantservice: src/shoppingassistantservice/**
